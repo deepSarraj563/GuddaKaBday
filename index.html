@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Happy Birthday Siddhi!</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            touch-action: none; /* Prevents scrolling while dragging */
+        }
+
+        /* Running Text (Marquee alternative) */
+        .scrolling-text-container {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.5);
+            overflow: hidden;
+            position: absolute;
+            z-index: 10;
+        }
+        .header-text { top: 0; }
+        .footer-text { bottom: 0; }
+        .scrolling-text {
+            white-space: nowrap;
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff4081;
+            padding: 10px 0;
+            animation: scroll-left 10s linear infinite;
+        }
+        @keyframes scroll-left {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* Main Content */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            position: relative;
+            z-index: 5;
+        }
+
+        /* Decorated Title */
+        h1 {
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4), 0 0 10px #ff007f, 0 0 20px #ff007f;
+            text-align: center;
+            margin-bottom: 20px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Cake and Knife */
+        .interaction-area {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        #cake {
+            font-size: 120px;
+            user-select: none;
+            transition: transform 0.3s;
+        }
+        #knife {
+            font-size: 60px;
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            cursor: grab;
+            user-select: none;
+            z-index: 20;
+        }
+        #knife:active {
+            cursor: grabbing;
+        }
+
+        /* Proposal Section */
+        #proposal-section {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
+        }
+        #proposal-section h2 {
+            color: #d81b60;
+            text-shadow: 1px 1px 2px #fff;
+            font-size: 32px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .btn-container {
+            position: relative;
+            width: 100%;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 20px;
+            font-weight: bold;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        #yesBtn {
+            background-color: #4CAF50;
+            color: white;
+            z-index: 15;
+        }
+        #noBtn {
+            background-color: #f44336;
+            color: white;
+            position: absolute;
+            z-index: 15;
+        }
+
+        /* Balloons */
+        .balloon {
+            position: absolute;
+            font-size: 40px;
+            bottom: -50px;
+            animation: floatUp 5s ease-in-out infinite;
+            z-index: 1;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-120vh) rotate(20deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bday-audio" src="happy_birthday.mp3"></audio>
+
+    <div class="scrolling-text-container header-text">
+        <div class="scrolling-text">✨ Happy Birthday Siddhi! ✨ Happy Birthday Siddhi! ✨ Happy Birthday Siddhi! ✨</div>
+    </div>
+
+    <div class="balloon" style="left: 10%; animation-duration: 6s;">🎈</div>
+    <div class="balloon" style="left: 30%; animation-duration: 8s; animation-delay: 1s;">🎉</div>
+    <div class="balloon" style="left: 50%; animation-duration: 5s; animation-delay: 2s;">🎈</div>
+    <div class="balloon" style="left: 70%; animation-duration: 7s; animation-delay: 0.5s;">🎊</div>
+    <div class="balloon" style="left: 90%; animation-duration: 6s; animation-delay: 1.5s;">🎈</div>
+
+    <div class="container">
+        <h1 id="main-title">Happy Birthday<br>Siddhi!</h1>
+
+        <div class="interaction-area" id="interaction-area">
+            <div id="cake">🎂</div>
+            <div id="knife">🔪</div>
+        </div>
+
+        <div id="proposal-section">
+            <h2>I Love You. ❤️<br>Can I be yours?</h2>
+            <div class="btn-container">
+                <button id="yesBtn">Yes!</button>
+                <button id="noBtn" style="right: calc(50% - 90px);">No</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="scrolling-text-container footer-text">
+        <div class="scrolling-text">✨ Happy Birthday Siddhi! ✨ Happy Birthday Siddhi! ✨ Happy Birthday Siddhi! ✨</div>
+    </div>
+
+    <script>
+        const knife = document.getElementById('knife');
+        const cake = document.getElementById('cake');
+        const interactionArea = document.getElementById('interaction-area');
+        const audio = document.getElementById('bday-audio');
+        const proposalSection = document.getElementById('proposal-section');
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const mainTitle = document.getElementById('main-title');
+        
+        let isDragging = false;
+        let cakeCut = false;
+
+        // Dragging Logic for Knife (Mouse & Touch)
+        function startDrag(e) {
+            if (cakeCut) return;
+            isDragging = true;
+        }
+
+        function moveDrag(e) {
+            if (!isDragging) return;
+            e.preventDefault(); // Prevent scrolling
+            
+            let clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+            let clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+
+            // Move knife to follow finger/mouse
+            knife.style.position = 'fixed';
+            knife.style.left = (clientX - 30) + 'px';
+            knife.style.top = (clientY - 30) + 'px';
+
+            checkCollision();
+        }
+
+        function endDrag() {
+            isDragging = false;
+        }
+
+        knife.addEventListener('mousedown', startDrag);
+        document.addEventListener('mousemove', moveDrag);
+        document.addEventListener('mouseup', endDrag);
+
+        knife.addEventListener('touchstart', startDrag, {passive: false});
+        document.addEventListener('touchmove', moveDrag, {passive: false});
+        document.addEventListener('touchend', endDrag);
+
+        // Collision Detection (Knife touching Cake)
+        function checkCollision() {
+            if (cakeCut) return;
+
+            const knifeRect = knife.getBoundingClientRect();
+            const cakeRect = cake.getBoundingClientRect();
+
+            // Simple overlap check
+            if (!(knifeRect.right < cakeRect.left || 
+                  knifeRect.left > cakeRect.right || 
+                  knifeRect.bottom < cakeRect.top || 
+                  knifeRect.top > cakeRect.bottom)) {
+                
+                cutTheCake();
+            }
+        }
+
+        function cutTheCake() {
+            cakeCut = true;
+            isDragging = false;
+            
+            // Visual changes
+            cake.innerHTML = '🍰🍰'; // Change to slices
+            knife.style.display = 'none'; // Hide knife
+            mainTitle.style.display = 'none'; // Make room for proposal
+
+            // Audio & Party Popper
+            audio.play().catch(e => console.log("Audio autoplay blocked by browser until user interaction."));
+            fireConfetti();
+
+            // Show Proposal
+            setTimeout(() => {
+                proposalSection.style.display = 'flex';
+                // Reset No button position on appear
+                noBtn.style.position = 'absolute';
+                noBtn.style.left = 'calc(50% + 10px)';
+            }, 1000);
+        }
+
+        function fireConfetti() {
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#ff007f', '#ffffff', '#ffeb3b']
+            });
+        }
+
+        // Evading "No" Button Logic
+        function evadeMouse(e) {
+            e.preventDefault();
+            const container = document.body;
+            const containerWidth = container.clientWidth;
+            const containerHeight = container.clientHeight;
+            
+            const btnWidth = noBtn.offsetWidth;
+            const btnHeight = noBtn.offsetHeight;
+
+            // Generate random coordinates within the screen limits
+            const randomX = Math.max(0, Math.floor(Math.random() * (containerWidth - btnWidth)));
+            const randomY = Math.max(0, Math.floor(Math.random() * (containerHeight - btnHeight)));
+
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+        }
+
+        noBtn.addEventListener('mouseover', evadeMouse);
+        noBtn.addEventListener('touchstart', evadeMouse, {passive: false});
+
+        // "Yes" Button Logic
+        yesBtn.addEventListener('click', () => {
+            fireConfetti();
+            setInterval(fireConfetti, 1500); // Continuous poppers!
+            proposalSection.innerHTML = "<h2>I knew you'd say Yes! ❤️🎉</h2>";
+        });
+
+    </script>
+</body>
+</html>
