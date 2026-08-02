@@ -12,32 +12,78 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            /* Added an animated gradient background for more attraction */
+            background: linear-gradient(-45deg, #ff9a9e, #fecfef, #fbc2eb, #a18cd1, #a6c1ee);
+            background-size: 400% 400%;
+            animation: gradientBG 10s ease infinite;
             font-family: 'Comic Sans MS', cursive, sans-serif;
-            touch-action: none; /* Prevents scrolling while dragging */
+            touch-action: none; 
         }
 
-        /* Running Text (Marquee alternative) */
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- Start Screen Overlay --- */
+        #start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: inherit;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        #start-btn {
+            background-color: #ff4081;
+            color: white;
+            padding: 20px 40px;
+            font-size: 24px;
+            border: none;
+            border-radius: 50px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            cursor: pointer;
+            animation: pulse-btn 1.5s infinite;
+        }
+        @keyframes pulse-btn {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Seamless Infinite Scrolling Text */
         .scrolling-text-container {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.5);
+            width: 100vw;
+            background: rgba(255, 255, 255, 0.6);
             overflow: hidden;
             position: absolute;
             z-index: 10;
+            display: flex;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         .header-text { top: 0; }
         .footer-text { bottom: 0; }
-        .scrolling-text {
-            white-space: nowrap;
+        
+        .marquee {
+            display: flex;
+            width: max-content;
+            animation: scroll 15s linear infinite;
+        }
+        .marquee span {
             font-size: 24px;
             font-weight: bold;
             color: #ff4081;
             padding: 10px 0;
-            animation: scroll-left 10s linear infinite;
+            white-space: nowrap;
         }
-        @keyframes scroll-left {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); } 
         }
 
         /* Main Content */
@@ -77,7 +123,11 @@
         #cake {
             font-size: 120px;
             user-select: none;
-            transition: transform 0.3s;
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        #cake:hover {
+            transform: scale(1.1) rotate(-5deg);
         }
         #knife {
             font-size: 60px;
@@ -87,10 +137,9 @@
             cursor: grab;
             user-select: none;
             z-index: 20;
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.3));
         }
-        #knife:active {
-            cursor: grabbing;
-        }
+        #knife:active { cursor: grabbing; }
 
         /* Proposal Section */
         #proposal-section {
@@ -114,7 +163,7 @@
             justify-content: center;
             gap: 20px;
         }
-        button {
+        .prop-btn {
             padding: 15px 30px;
             font-size: 20px;
             font-weight: bold;
@@ -122,7 +171,9 @@
             border-radius: 25px;
             cursor: pointer;
             box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
         }
+        .prop-btn:active { transform: scale(0.95); }
         #yesBtn {
             background-color: #4CAF50;
             color: white;
@@ -133,19 +184,31 @@
             color: white;
             position: absolute;
             z-index: 15;
+            transition: 0.2s ease-out; /* smooths the jump slightly */
         }
 
-        /* Balloons */
+        /* Dynamic Interactive Balloons */
         .balloon {
             position: absolute;
-            font-size: 40px;
-            bottom: -50px;
-            animation: floatUp 5s ease-in-out infinite;
-            z-index: 1;
+            font-size: 45px;
+            bottom: -60px;
+            cursor: crosshair;
+            user-select: none;
+            transition: transform 0.1s;
+            z-index: 2;
         }
+        .balloon:active { transform: scale(1.3); }
         @keyframes floatUp {
             0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(-120vh) rotate(20deg); opacity: 0; }
+            100% { transform: translateY(-120vh) rotate(25deg); opacity: 0; }
+        }
+        .pop-anim {
+            animation: pop 0.2s ease-out forwards !important;
+        }
+        @keyframes pop {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+            100% { transform: scale(0); opacity: 0; }
         }
     </style>
 </head>
@@ -153,15 +216,16 @@
 
     <audio id="bday-audio" src="happy_birthday.mp3"></audio>
 
-    <div class="scrolling-text-container header-text">
-        <div class="scrolling-text">✨ Happy Birthday Siddhi! ✨ Happy Birthday Siddhi! ✨ Happy Birthday Siddhi! ✨</div>
+    <div id="start-screen">
+        <button id="start-btn">Tap for a Surprise! 🎁</button>
     </div>
 
-    <div class="balloon" style="left: 10%; animation-duration: 6s;">🎈</div>
-    <div class="balloon" style="left: 30%; animation-duration: 8s; animation-delay: 1s;">🎉</div>
-    <div class="balloon" style="left: 50%; animation-duration: 5s; animation-delay: 2s;">🎈</div>
-    <div class="balloon" style="left: 70%; animation-duration: 7s; animation-delay: 0.5s;">🎊</div>
-    <div class="balloon" style="left: 90%; animation-duration: 6s; animation-delay: 1.5s;">🎈</div>
+    <div class="scrolling-text-container header-text">
+        <div class="marquee">
+            <span>✨ Happy Birthday Siddhi! ✨ Happy Birthday Siddhi! ✨ Happy Birthday Siddhi! ✨ Happy Birthday Siddhi! ✨&nbsp;</span>
+            <span>✨ Happy Birthday Siddhi! ✨ Happy Birthday Siddhi! ✨ Happy Birthday Siddhi! ✨ Happy Birthday Siddhi! ✨&nbsp;</span>
+        </div>
+    </div>
 
     <div class="container">
         <h1 id="main-title">Happy Birthday<br>Siddhi!</h1>
@@ -174,21 +238,39 @@
         <div id="proposal-section">
             <h2>I Love You. ❤️<br>Can I be yours?</h2>
             <div class="btn-container">
-                <button id="yesBtn">Yes!</button>
-                <button id="noBtn" style="right: calc(50% - 90px);">No</button>
+                <button id="yesBtn" class="prop-btn">Yes!</button>
+                <button id="noBtn" class="prop-btn" style="right: calc(50% - 90px);">No</button>
             </div>
         </div>
     </div>
 
     <div class="scrolling-text-container footer-text">
-        <div class="scrolling-text">✨ Happy Birthday Siddhi! ✨ Happy Birthday Siddhi! ✨ Happy Birthday Siddhi! ✨</div>
+        <div class="marquee">
+            <span>✨ Happy Birthday Siddhi! ✨ Happy Birthday Siddhi! ✨ Happy Birthday Siddhi! ✨ Happy Birthday Siddhi! ✨&nbsp;</span>
+            <span>✨ Happy Birthday Siddhi! ✨ Happy Birthday Siddhi! ✨ Happy Birthday Siddhi! ✨ Happy Birthday Siddhi! ✨&nbsp;</span>
+        </div>
     </div>
 
     <script>
+        const audio = document.getElementById('bday-audio');
+        const startScreen = document.getElementById('start-screen');
+        const startBtn = document.getElementById('start-btn');
+
+        // --- Mobile Audio Unlocker ---
+        startBtn.addEventListener('click', () => {
+            audio.play().then(() => {
+                audio.pause();
+                audio.currentTime = 0;
+            }).catch(e => console.log("Audio prep done."));
+            
+            startScreen.style.display = 'none';
+            // Increased spawn rate for lots of sparkles/balloons
+            setInterval(createBalloon, 300); 
+        });
+
+        // --- Knife & Cake Logic ---
         const knife = document.getElementById('knife');
         const cake = document.getElementById('cake');
-        const interactionArea = document.getElementById('interaction-area');
-        const audio = document.getElementById('bday-audio');
         const proposalSection = document.getElementById('proposal-section');
         const yesBtn = document.getElementById('yesBtn');
         const noBtn = document.getElementById('noBtn');
@@ -197,7 +279,6 @@
         let isDragging = false;
         let cakeCut = false;
 
-        // Dragging Logic for Knife (Mouse & Touch)
         function startDrag(e) {
             if (cakeCut) return;
             isDragging = true;
@@ -205,12 +286,11 @@
 
         function moveDrag(e) {
             if (!isDragging) return;
-            e.preventDefault(); // Prevent scrolling
+            e.preventDefault(); 
             
             let clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
             let clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
 
-            // Move knife to follow finger/mouse
             knife.style.position = 'fixed';
             knife.style.left = (clientX - 30) + 'px';
             knife.style.top = (clientY - 30) + 'px';
@@ -230,19 +310,15 @@
         document.addEventListener('touchmove', moveDrag, {passive: false});
         document.addEventListener('touchend', endDrag);
 
-        // Collision Detection (Knife touching Cake)
         function checkCollision() {
             if (cakeCut) return;
-
             const knifeRect = knife.getBoundingClientRect();
             const cakeRect = cake.getBoundingClientRect();
 
-            // Simple overlap check
-            if (!(knifeRect.right < cakeRect.left || 
-                  knifeRect.left > cakeRect.right || 
-                  knifeRect.bottom < cakeRect.top || 
-                  knifeRect.top > cakeRect.bottom)) {
-                
+            if (!(knifeRect.right < cakeRect.left + 20 || 
+                  knifeRect.left > cakeRect.right - 20 || 
+                  knifeRect.bottom < cakeRect.top + 20 || 
+                  knifeRect.top > cakeRect.bottom - 20)) {
                 cutTheCake();
             }
         }
@@ -251,19 +327,18 @@
             cakeCut = true;
             isDragging = false;
             
-            // Visual changes
-            cake.innerHTML = '🍰🍰'; // Change to slices
-            knife.style.display = 'none'; // Hide knife
-            mainTitle.style.display = 'none'; // Make room for proposal
+            cake.innerHTML = '🍰🍰'; 
+            cake.style.transform = 'scale(1.2)';
+            knife.style.display = 'none'; 
+            mainTitle.style.display = 'none'; 
 
-            // Audio & Party Popper
-            audio.play().catch(e => console.log("Audio autoplay blocked by browser until user interaction."));
+            audio.currentTime = 0;
+            audio.play().catch(e => console.log("Audio play failed:", e));
+            
             fireConfetti();
 
-            // Show Proposal
             setTimeout(() => {
                 proposalSection.style.display = 'flex';
-                // Reset No button position on appear
                 noBtn.style.position = 'absolute';
                 noBtn.style.left = 'calc(50% + 10px)';
             }, 1000);
@@ -274,23 +349,53 @@
                 particleCount: 150,
                 spread: 70,
                 origin: { y: 0.6 },
-                colors: ['#ff007f', '#ffffff', '#ffeb3b']
+                colors: ['#ff007f', '#ffffff', '#ffeb3b', '#4CAF50']
             });
         }
 
-        // Evading "No" Button Logic
+        // --- Expanded Interactive Balloons & Sparkles Logic ---
+        const emojis = ['🎈', '🎉', '🎊', '🎀', '🎁', '✨', '💖', '❤️', '💕', '🥳'];
+        
+        function createBalloon() {
+            const balloon = document.createElement('div');
+            balloon.classList.add('balloon');
+            balloon.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+            
+            balloon.style.left = Math.random() * 90 + 'vw';
+            const duration = Math.random() * 4 + 3; 
+            balloon.style.animation = `floatUp ${duration}s ease-in-out forwards`;
+            
+            const popBalloon = () => {
+                balloon.style.animation = 'none'; 
+                balloon.classList.add('pop-anim'); 
+                setTimeout(() => balloon.remove(), 200); 
+            };
+
+            balloon.addEventListener('click', popBalloon);
+            balloon.addEventListener('touchstart', popBalloon, {passive: true});
+
+            document.body.appendChild(balloon);
+
+            setTimeout(() => {
+                if(document.body.contains(balloon)) balloon.remove();
+            }, duration * 1000);
+        }
+
+        // --- Evading "No" Button Logic ---
         function evadeMouse(e) {
-            e.preventDefault();
-            const container = document.body;
-            const containerWidth = container.clientWidth;
-            const containerHeight = container.clientHeight;
+            if(e.cancelable) e.preventDefault();
+            
+            // Update the text when hovered/touched
+            noBtn.innerText = 'Try once more 🥺';
+
+            const containerWidth = window.innerWidth;
+            const containerHeight = window.innerHeight;
             
             const btnWidth = noBtn.offsetWidth;
             const btnHeight = noBtn.offsetHeight;
 
-            // Generate random coordinates within the screen limits
-            const randomX = Math.max(0, Math.floor(Math.random() * (containerWidth - btnWidth)));
-            const randomY = Math.max(0, Math.floor(Math.random() * (containerHeight - btnHeight)));
+            const randomX = Math.max(20, Math.floor(Math.random() * (containerWidth - btnWidth - 20)));
+            const randomY = Math.max(60, Math.floor(Math.random() * (containerHeight - btnHeight - 60)));
 
             noBtn.style.position = 'fixed';
             noBtn.style.left = randomX + 'px';
@@ -300,13 +405,12 @@
         noBtn.addEventListener('mouseover', evadeMouse);
         noBtn.addEventListener('touchstart', evadeMouse, {passive: false});
 
-        // "Yes" Button Logic
+        // --- "Yes" Button Logic ---
         yesBtn.addEventListener('click', () => {
             fireConfetti();
-            setInterval(fireConfetti, 1500); // Continuous poppers!
-            proposalSection.innerHTML = "<h2>I knew you'd say Yes! ❤️🎉</h2>";
+            setInterval(fireConfetti, 1200); 
+            proposalSection.innerHTML = "<h2 style='font-size:40px'>Thank You Baby, I knew you'd say Yes! \n❤️💍🎉 I Love You ❤️💍🎉</h2>";
         });
-
     </script>
 </body>
 </html>
