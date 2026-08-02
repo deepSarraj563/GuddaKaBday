@@ -187,6 +187,77 @@
             white-space: nowrap;
         }
 
+        /* Heart Button */
+        .heart-btn {
+            background-color: #ff1744;
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            padding: 15px 35px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 15px;
+            box-shadow: 0 0 20px rgba(255, 23, 68, 0.8);
+            animation: pulse-heart 1.2s infinite;
+        }
+        @keyframes pulse-heart {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        /* Lovely Letter Frame Overlay */
+        .letter-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85%;
+            max-width: 480px;
+            max-height: 75vh;
+            overflow-y: auto;
+            background: #fff0f5;
+            border: 4px solid #ff4081;
+            border-radius: 25px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4), 0 0 25px #ff80ab;
+            z-index: 1000;
+            text-align: left;
+            color: #333;
+            font-size: 16px;
+            line-height: 1.6;
+            touch-action: pan-y;
+        }
+        .letter-modal h3 {
+            color: #d81b60;
+            text-align: center;
+            margin-top: 0;
+            font-size: 24px;
+        }
+        .letter-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        .close-btn {
+            display: block;
+            margin: 20px auto 0 auto;
+            background: #ff4081;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
         /* Dynamic Interactive Balloons */
         .balloon {
             position: absolute;
@@ -262,6 +333,15 @@
                 <button id="noBtn" class="prop-btn" style="right: calc(50% - 90px);">No</button>
             </div>
         </div>
+    </div>
+
+    <div id="letterBackdrop" class="letter-backdrop"></div>
+    <div id="letterModal" class="letter-modal">
+        <h3>💌 Dear Gudda 💌</h3>
+        <p>Many Many Happy returns of the day, Happiest Birthday mera baccha. Bhagwan kare teri sab man ki icchaye bahut jaldi poori ho, job lage tu bahar aaye, khush rahe, apni jindagi apne tarike se jiye, koi rokne wala na ho aur tu bahar aake mere paas rahe aur bahut saara tujhe ghumau snow fall, hills, beaches, clubs, pubs, romantic sites, aur poori dunia jo jo tu chahti hai sab tujhe ghumau aur tere saare sapne poore ho. bhagwan ji teri sab sune baba tujhpe aashirwad rakhe aur bahut jaldi tu apni jindagi apne tarike se jiye. tujhe bahut saara pyar kru aur tujhe bahut khush rakhu. bhagwan teri sab man ki icchaye poori kre jo bhi tere liye achi ho, mera sath meri dosti mera pyar mera sab kuch hamesha tere liye hai.</p>
+        <p>words kam hain mere man ki cheeje describe krne ke liye but yes I love you so much, mera baccha hai tu mera pahla baccha.</p>
+        <p style="text-align: center;"><strong>Happy Birthday Again mera Gudda, lots of love.. ❤️✨</strong></p>
+        <button id="closeLetter" class="close-btn">Close ❤️</button>
     </div>
 
     <div class="scrolling-text-container footer-text">
@@ -418,12 +498,12 @@
         function evadeMouse(e) {
             if(e.cancelable) e.preventDefault();
             
-            noBtn.innerText = 'Yes Press Kar De Na';
+            noBtn.innerText = 'Yes Press Kr Sidhe';
 
             clearTimeout(noBtnResetTimer);
             noBtnResetTimer = setTimeout(() => {
                 noBtn.innerText = 'No';
-            }, 1000);
+            }, 500);
 
             spawnAngryEmoji();
 
@@ -431,28 +511,52 @@
             const btnWidth = noBtn.offsetWidth;
             const btnHeight = noBtn.offsetHeight;
 
-            // Calculate the exact center of the screen for the X axis
             const fixedX = (window.innerWidth / 2) - (btnWidth / 2);
-            
-            // Generate a random Y position (Up and Down only)
             const randomY = Math.max(60, Math.floor(Math.random() * (containerHeight - btnHeight - 60)));
 
             noBtn.style.position = 'fixed';
-            // Lock the left position so it stays safely in the center horizontally
             noBtn.style.left = fixedX + 'px'; 
-            // Only update the top position to make it move vertically
             noBtn.style.top = randomY + 'px';
         }
 
         noBtn.addEventListener('mouseover', evadeMouse);
         noBtn.addEventListener('touchstart', evadeMouse, {passive: false});
 
-        // --- "Yes" Button Logic ---
+        // --- "Yes" Button Logic & Heart Button Popup ---
+        const letterModal = document.getElementById('letterModal');
+        const letterBackdrop = document.getElementById('letterBackdrop');
+        const closeLetter = document.getElementById('closeLetter');
+
         yesBtn.addEventListener('click', () => {
             fireConfetti();
             setInterval(fireConfetti, 1200); 
-            proposalSection.innerHTML = "<h2 style='font-size:40px'>Thank You Baby, I knew you'd say Yes! \n❤️💍🎉 I Love You ❤️💍🎉</h2>";
+
+            proposalSection.innerHTML = `
+                <h2 style='font-size:32px'>Thank You Baby, I knew you'd say Yes!<br>❤️💍🎉 I Love You ❤️💍🎉</h2>
+                <button id="touchMeBtn" class="heart-btn">💖 Touch me 💖</button>
+            `;
+
+            const touchMeBtn = document.getElementById('touchMeBtn');
+            touchMeBtn.addEventListener('click', openLetter);
+            touchMeBtn.addEventListener('touchstart', (e) => {
+                if (e.cancelable) e.preventDefault();
+                openLetter();
+            });
         });
+
+        function openLetter() {
+            fireConfetti();
+            letterModal.style.display = 'block';
+            letterBackdrop.style.display = 'block';
+        }
+
+        function closeLetterModal() {
+            letterModal.style.display = 'none';
+            letterBackdrop.style.display = 'none';
+        }
+
+        closeLetter.addEventListener('click', closeLetterModal);
+        letterBackdrop.addEventListener('click', closeLetterModal);
     </script>
 </body>
 </html>
