@@ -12,7 +12,6 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            /* Added an animated gradient background for more attraction */
             background: linear-gradient(-45deg, #ff9a9e, #fecfef, #fbc2eb, #a18cd1, #a6c1ee);
             background-size: 400% 400%;
             animation: gradientBG 10s ease infinite;
@@ -184,7 +183,8 @@
             color: white;
             position: absolute;
             z-index: 15;
-            transition: 0.2s ease-out; /* smooths the jump slightly */
+            transition: 0.2s ease-out; 
+            white-space: nowrap;
         }
 
         /* Dynamic Interactive Balloons */
@@ -209,6 +209,26 @@
             0% { transform: scale(1); opacity: 1; }
             50% { transform: scale(1.5); opacity: 0.5; }
             100% { transform: scale(0); opacity: 0; }
+        }
+
+        /* Angry Emoji Animation */
+        .angry-popup {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            font-size: 80px;
+            z-index: 100;
+            pointer-events: none;
+            text-shadow: 0 0 30px #ff0000, 0 0 10px #ff4500;
+            animation: shakeFade 1s forwards;
+        }
+        @keyframes shakeFade {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            20% { transform: translate(-55%, -50%) scale(1.5) rotate(-10deg); }
+            40% { transform: translate(-45%, -50%) scale(1.5) rotate(10deg); }
+            60% { transform: translate(-55%, -50%) scale(1.5) rotate(-10deg); }
+            80% { transform: translate(-45%, -50%) scale(1.5) rotate(10deg); }
+            100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
         }
     </style>
 </head>
@@ -264,7 +284,6 @@
             }).catch(e => console.log("Audio prep done."));
             
             startScreen.style.display = 'none';
-            // Increased spawn rate for lots of sparkles/balloons
             setInterval(createBalloon, 300); 
         });
 
@@ -381,12 +400,28 @@
             }, duration * 1000);
         }
 
+        // --- Angry Emoji Spawner ---
+        function spawnAngryEmoji() {
+            const angryEl = document.createElement('div');
+            angryEl.classList.add('angry-popup');
+            angryEl.innerText = '😡💢';
+            document.body.appendChild(angryEl);
+            
+            // Remove after animation finishes (1s)
+            setTimeout(() => {
+                if (document.body.contains(angryEl)) angryEl.remove();
+            }, 1000);
+        }
+
         // --- Evading "No" Button Logic ---
         function evadeMouse(e) {
             if(e.cancelable) e.preventDefault();
             
-            // Update the text when hovered/touched
-            noBtn.innerText = 'Try once more 🥺';
+            // Update the text as requested
+            noBtn.innerText = 'Try yes once please';
+
+            // Spawn the decorated angry emoji
+            spawnAngryEmoji();
 
             const containerWidth = window.innerWidth;
             const containerHeight = window.innerHeight;
