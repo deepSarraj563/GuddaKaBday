@@ -407,33 +407,40 @@
             angryEl.innerText = '😡💢';
             document.body.appendChild(angryEl);
             
-            // Remove after animation finishes (1s)
             setTimeout(() => {
                 if (document.body.contains(angryEl)) angryEl.remove();
             }, 1000);
         }
 
-        // --- Evading "No" Button Logic ---
+        // --- Evading "No" Button Logic with Vertical Only Movement ---
+        let noBtnResetTimer; 
+
         function evadeMouse(e) {
             if(e.cancelable) e.preventDefault();
             
-            // Update the text as requested
             noBtn.innerText = 'Try yes once please';
 
-            // Spawn the decorated angry emoji
+            clearTimeout(noBtnResetTimer);
+            noBtnResetTimer = setTimeout(() => {
+                noBtn.innerText = 'No';
+            }, 1000);
+
             spawnAngryEmoji();
 
-            const containerWidth = window.innerWidth;
             const containerHeight = window.innerHeight;
-            
             const btnWidth = noBtn.offsetWidth;
             const btnHeight = noBtn.offsetHeight;
 
-            const randomX = Math.max(20, Math.floor(Math.random() * (containerWidth - btnWidth - 20)));
+            // Calculate the exact center of the screen for the X axis
+            const fixedX = (window.innerWidth / 2) - (btnWidth / 2);
+            
+            // Generate a random Y position (Up and Down only)
             const randomY = Math.max(60, Math.floor(Math.random() * (containerHeight - btnHeight - 60)));
 
             noBtn.style.position = 'fixed';
-            noBtn.style.left = randomX + 'px';
+            // Lock the left position so it stays safely in the center horizontally
+            noBtn.style.left = fixedX + 'px'; 
+            // Only update the top position to make it move vertically
             noBtn.style.top = randomY + 'px';
         }
 
